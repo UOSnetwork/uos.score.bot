@@ -1,0 +1,27 @@
+{
+  "name": "uos.tgbot",
+  "version": "1.0.0",
+  "description": "Telegram bot to query UOS Network Social Activity and Importance rates",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx standard",
+    "start": "node bot.js"
+  },
+  "author": "AndrewU <andrew@uos.network>",
+  "license": "ISC",
+  "engines": {
+    "node": "10.x"
+  },
+  "dependencies": {
+    "dotenv": "^8.1.0",
+    "eosjs": "^20.0.0",
+    "knex": "^0.19.3",
+    "node-fetch": "^2.6.0",
+    "pg": "^7.12.1",
+    "telegraf": "^3.32.0",
+    "telegraf-command-parts": "^1.0.3"
+  },
+  "devDependencies": {
+    "standard": "^14.3.1"
+  }
+}

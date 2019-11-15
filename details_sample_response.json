@@ -1,0 +1,34 @@
+{
+  "id": 13,
+  "accountName": "spirinspirin",
+  "lastName": "",
+  "firstName": "Alexander°",
+  "entityImages": {
+    "cover": [
+      {
+        "url": "https://uploader.u.community/2019/7/5/13-xubjv1oxjxq8df4l.jpg"
+      }
+    ]
+  },
+  "avatarFilename": "avatar_filename-1562339096253.jpg",
+  "about": "My profile is finally stored on the blockchain! Woot!",
+  "moodMessage": "Hello world!",
+  "createdAt": "2018-10-31T11:26:06.039Z",
+  "updatedAt": "2019-03-26T12:04:28.754Z",
+  "personalWebsiteUrl": "https://uos.network",
+  "isTrackingAllowed": true,
+  "usersSources": [
+    {
+      "id": 188,
+      "sourceUrl": "https://uos.network",
+      "isOfficial": true,
+      "sourceTypeId": null,
+      "createdAt": "2019-02-07T12:14:23.162Z",
+      "updatedAt": "2019-03-26T12:04:28.752Z",
+      "userId": 13
+    },
+    {
+      "sourceUrl": "https://t.me/defileroff"
+    }
+  ]
+}

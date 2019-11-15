@@ -1,0 +1,51 @@
+{
+  name: 'andrewufirst',
+  values: {
+    staked_balance: '8000020000',
+    validity: '0.0090090090',
+    importance: '0.0024446069',
+    scaled_importance: '4.5127443374',
+    stake_rate: '0.0019734189',
+    scaled_stake_rate: '3.6429312894',
+    social_rate: '0.0086587177',
+    scaled_social_rate: '15.9839928742',
+    transfer_rate: '0.0000000000',
+    scaled_transfer_rate: '0.0000000000',
+    previous_cumulative_emission: '163.8482',
+    current_emission: '0.2314',
+    current_cumulative_emission: '164.0796'
+  },
+  incoming: [],
+  outgoing: [
+    {
+      to: 'binancechain',
+      interaction: 'UPVOTE',
+      content: 'pstms-k23086xx',
+      blocks_from_now: 2605159
+    },
+    {
+      to: 'julianhorack',
+      interaction: 'UPVOTE',
+      content: 'pstms-k24gh4q4',
+      blocks_from_now: 2605172
+    },
+    {
+      to: 'alluncovered',
+      interaction: 'UPVOTE',
+      content: 'pstms-k25thn98',
+      blocks_from_now: 2605237
+    },
+    {
+      to: 'org-hni9970jnx2up2k',
+      interaction: 'UPVOTE',
+      content: 'pstms-k1lrhobn',
+      blocks_from_now: 5430406
+    },
+    {
+      to: 'nathankaytar',
+      interaction: 'UPVOTE',
+      content: 'pstms-k0tte232',
+      blocks_from_now: 8228476
+    }
+  ]
+}
