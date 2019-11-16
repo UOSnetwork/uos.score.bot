@@ -139,29 +139,37 @@ const linkCommand = async (ctx) => {
         const linkedAccount = await manager.getAccountByTelegramId(ctx.message.from.id)
 
         if (!linkedAccount) {
-          const uosAccountDetails = JSON.parse(await api.getUosAccountDetails(uosName))
+          try {
+            const uosAccountDetails = JSON.parse(await api.getUosAccountDetails(uosName))
 
-          if (uosAccountDetails && Object.entries(uosAccountDetails).length !== 0) {
-            let found = false
+            if (uosAccountDetails && Object.entries(uosAccountDetails).length !== 0) {
+              let found = false
 
-            for (const source of uosAccountDetails.usersSources) {
-              if (source.sourceUrl.indexOf(tgName) > 0) {
-                found = true
+              const pattern = new RegExp(/^https:\/\/t.me\/(\w+)$/g)
+
+              for (const source of uosAccountDetails.usersSources) {
+                const test = pattern.exec(source.sourceUrl)
+                if (test && test.length > 0 && test[1] === tgName) {
+                  found = true
+                }
               }
-            }
 
-            if (found) {
-              const result = await manager.addAccount({
-                tg_uid: ctx.message.from.id,
-                tg_name: tgName,
-                uos_name: uosName
-              })
-              await ctx.replyWithMarkdown(`Your telegram account @${result.tg_name} linked to UOS account ${manager.uosAccountMarkdownName(result.uos_name)}.`)
+              if (found) {
+                const result = await manager.addAccount({
+                  tg_uid: ctx.message.from.id,
+                  tg_name: tgName,
+                  uos_name: uosName
+                })
+                await ctx.replyWithMarkdown(`Your telegram account @${result.tg_name} linked to UOS account ${manager.uosAccountMarkdownName(result.uos_name)}.`)
+              } else {
+                await ctx.replyWithMarkdown(`${process.env.ACCOUNT_HELP_LINK}`)
+              }
             } else {
-              await ctx.replyWithMarkdown('[Please add your telegram account link to your profile on U°Community platform.](https://u.community/)')
+              await ctx.replyWithMarkdown(`UOS account details for ${manager.uosAccountMarkdownLink(uosName)} not found, please register on U°Community platform to use this service.`)
             }
-          } else {
-            await ctx.replyWithMarkdown(`UOS account details for ${manager.uosAccountMarkdownLink(uosName)} not found, please register on U°Community platform to use this service.`)
+          } catch (e) {
+            console.error(e)
+            await ctx.replyWithMarkdown(`ERROR parsing your UOS account data. ${process.env.ACCOUNT_HELP_LINK}`)
           }
         } else {
           await ctx.replyWithMarkdown(`Your telegram account @${linkedAccount.tg_name} is already linked to UOS account ${manager.uosAccountMarkdownName(linkedAccount.uos_name)}.`)
