@@ -1,5 +1,9 @@
 # UOS Score Bot for Telegram
 
+![Travis (.org)](https://img.shields.io/travis/UOSnetwork/uos-score-bot)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/UOSnetwork/uos-score-bot)
+![GitHub](https://img.shields.io/github/license/UOSnetwork/uos-score-bot)
+
 This bot can show both Social and Importance° rates for any account of UOS° Network. Also, anyone can link their telegram account to their UOS° account to query any linked telegram accounts for rates.   
 
 ## Getting Started
