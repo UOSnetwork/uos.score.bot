@@ -4,14 +4,19 @@
   "version": "0.5.0",
   "main": "index.js",
   "scripts": {
-    "test": "npx standard",
-    "start": "node bot.js"
+    "test": "mocha --exit",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/UOSnetwork/uos.score.bot.git"
   },
-  "keywords": ["uos","telegram","bot","telegraf"],
+  "keywords": [
+    "uos",
+    "telegram",
+    "bot",
+    "telegraf"
+  ],
   "author": "Andrew U° <andrew@uos.network>",
   "license": "MIT",
   "bugs": {
@@ -31,6 +36,9 @@
     "telegraf-command-parts": "^1.0.3"
   },
   "devDependencies": {
-    "standard": "^14.3.1"
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "standard": "^14.3.1",
+    "telegram-test-api": "^2.4.2"
   }
 }
