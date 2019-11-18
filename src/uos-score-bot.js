@@ -16,7 +16,7 @@ module.exports = class UosScoreBot {
       this.telegraf = new Telegraf(this.token)
     }
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV === 'development') {
       this.telegraf.use(Telegraf.log())
     }
 
