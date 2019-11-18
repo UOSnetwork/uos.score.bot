@@ -3,7 +3,7 @@ require('dotenv').config()
 const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const commandParts = require('telegraf-command-parts')
-const actionParts = require('./src/telegraf-action-parts')
+//const actionParts = require('./src/telegraf-action-parts')
 
 const AccountManager = require('./src/account_manager')
 const UosApi = require('./src/uos_api')
@@ -26,7 +26,7 @@ const api = new UosApi()
 bot.use(Telegraf.log())
 
 bot.use(commandParts())
-bot.use(actionParts())
+//bot.use(actionParts())
 
 /*
 bot.use((ctx, next) => {
@@ -116,6 +116,7 @@ const checkCommand = async (ctx) => {
 
 bot.command('/check', checkCommand)
 
+/*
 bot.on('text', async (ctx, next) => {
   if (ctx.state.action && ctx.state.action.command === 'score') {
     await checkUser(ctx, ctx.state.action.arg)
@@ -123,6 +124,7 @@ bot.on('text', async (ctx, next) => {
     next(ctx)
   }
 })
+*/
 
 // ---- CHECK/SCORE Command
 
