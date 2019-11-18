@@ -51,14 +51,14 @@ Then you can proceed with
 npm install
 ```
 
-###Running the bot
+### Running the bot
 
 To start the bot run
 ```
 node bot
 ```
 
-##How to use the bot
+## How to use the bot
 You can use the bot using the following commands:
 ```
 /link <UOS account name> - Links your telegram account to specified UOS account
