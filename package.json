@@ -1,14 +1,23 @@
 {
-  "name": "uos.tgbot",
-  "version": "1.0.0",
-  "description": "Telegram bot to query UOS Network Social Activity and Importance rates",
+  "name": "uos-score-bot",
+  "description": "Telegram bot to query UOS Network Social and Importance° rates",
+  "version": "0.5.0",
   "main": "index.js",
   "scripts": {
     "test": "npx standard",
     "start": "node bot.js"
   },
-  "author": "AndrewU <andrew@uos.network>",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UOSnetwork/uos.score.bot.git"
+  },
+  "keywords": ["uos","telegram","bot","telegraf"],
+  "author": "Andrew U° <andrew@uos.network>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/UOSnetwork/uos.score.bot/issues"
+  },
+  "homepage": "https://github.com/UOSnetwork/uos.score.bot",
   "engines": {
     "node": "10.x"
   },
