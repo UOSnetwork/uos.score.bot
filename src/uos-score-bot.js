@@ -40,20 +40,20 @@ I can help you to know the score of UOS Network accounts.
 [❤❤❤ Join bot community! ❤❤❤](https://u.community/communities/245)`, Extra.webPreview(false))
   }
 
-  async linkCommand (ctx) {
+  async linkCommand (that, ctx) {
     try {
       const uosName = ctx.state.command.args
       const tgName = ctx.message.from.username
 
       if (uosName && uosName.length === 12) {
-        const uosAccount = await this.api.getUosAccountScore(uosName)
+        const uosAccount = await that.api.getUosAccountScore(uosName)
 
         if (uosAccount && Object.entries(uosAccount).length !== 0) {
-          const linkedAccount = await this.manager.getAccountByTelegramId(ctx.message.from.id)
+          const linkedAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
 
           if (!linkedAccount) {
             try {
-              const uosAccountDetails = JSON.parse(await this.api.getUosAccountDetails(uosName))
+              const uosAccountDetails = JSON.parse(await that.api.getUosAccountDetails(uosName))
 
               if (uosAccountDetails && Object.entries(uosAccountDetails).length !== 0) {
                 let found = false
@@ -68,27 +68,27 @@ I can help you to know the score of UOS Network accounts.
                 }
 
                 if (found) {
-                  const result = await this.manager.addAccount({
+                  const result = await that.manager.addAccount({
                     tg_uid: ctx.message.from.id,
                     tg_name: tgName,
                     uos_name: uosName
                   })
-                  await ctx.replyWithMarkdown(`Your telegram account @${result.tg_name} linked to UOS account ${this.manager.uosAccountMarkdownName(result.uos_name)}.`)
+                  await ctx.replyWithMarkdown(`Your telegram account @${result.tg_name} linked to UOS account ${that.manager.uosAccountMarkdownName(result.uos_name)}.`)
                 } else {
                   await ctx.replyWithMarkdown(`${process.env.ACCOUNT_HELP_LINK}`)
                 }
               } else {
-                await ctx.replyWithMarkdown(`UOS account details for ${this.manager.uosAccountMarkdownLink(uosName)} not found, please register on U°Community platform to use this service.`)
+                await ctx.replyWithMarkdown(`UOS account details for ${that.manager.uosAccountMarkdownLink(uosName)} not found, please register on U°Community platform to use this service.`)
               }
             } catch (e) {
               console.error(e)
               await ctx.replyWithMarkdown(`ERROR parsing your UOS account data. ${process.env.ACCOUNT_HELP_LINK}`)
             }
           } else {
-            await ctx.replyWithMarkdown(`Your telegram account @${linkedAccount.tg_name} is already linked to UOS account ${this.manager.uosAccountMarkdownName(linkedAccount.uos_name)}.`)
+            await ctx.replyWithMarkdown(`Your telegram account @${linkedAccount.tg_name} is already linked to UOS account ${that.manager.uosAccountMarkdownName(linkedAccount.uos_name)}.`)
           }
         } else {
-          await ctx.replyWithMarkdown(`UOS account name ${this.manager.uosAccountMarkdownLink(uosName)} not found.`)
+          await ctx.replyWithMarkdown(`UOS account name ${that.manager.uosAccountMarkdownLink(uosName)} not found.`)
         }
       } else {
         await ctx.replyWithMarkdown('Provide valid UOS account name (must be exactly 12 chars length) to link your telegram account with.')
@@ -99,12 +99,12 @@ I can help you to know the score of UOS Network accounts.
     }
   }
 
-  async unlinkCommand (ctx) {
+  async unlinkCommand (that, ctx) {
     try {
-      const account = await this.manager.getAccountByTelegramId(ctx.message.from.id)
+      const account = await that.manager.getAccountByTelegramId(ctx.message.from.id)
       if (account) {
-        await this.manager.removeAccount(account.tg_uid)
-        await ctx.replyWithMarkdown(`Your telegram account @${account.tg_name} unlinked from UOS account ${this.manager.uosAccountMarkdownName(account.uos_name)}.`)
+        await that.manager.removeAccount(account.tg_uid)
+        await ctx.replyWithMarkdown(`Your telegram account @${account.tg_name} unlinked from UOS account ${that.manager.uosAccountMarkdownName(account.uos_name)}.`)
       } else {
         await ctx.replyWithMarkdown('Your telegram account is not linked with any UOS account.')
       }
@@ -114,19 +114,19 @@ I can help you to know the score of UOS Network accounts.
     }
   }
 
-  async checkUser (ctx, name) {
+  async checkUser (that, ctx, name) {
     try {
-      const myAccount = await this.manager.getAccountByTelegramId(ctx.message.from.id)
+      const myAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
 
       if (name) {
         if (name.startsWith('@')) {
-          const linkedAccount = await this.manager.getAccountByTelegramName(name.replace('@', ''))
+          const linkedAccount = await that.manager.getAccountByTelegramName(name.replace('@', ''))
 
           if (linkedAccount) {
-            const uosAccount = await this.api.getUosAccountScore(linkedAccount.uos_name)
+            const uosAccount = await that.api.getUosAccountScore(linkedAccount.uos_name)
 
             if (uosAccount && Object.entries(uosAccount).length !== 0) {
-              await ctx.replyWithMarkdown(this.manager.uosLinkedAccountToMarkdown(uosAccount, linkedAccount.tg_name))
+              await ctx.replyWithMarkdown(that.manager.uosLinkedAccountToMarkdown(uosAccount, linkedAccount.tg_name))
             } else {
               await ctx.replyWithMarkdown(`UOS account name *'${name}'* not found.`)
             }
@@ -134,10 +134,10 @@ I can help you to know the score of UOS Network accounts.
             await ctx.replyWithMarkdown('This telegram account is not linked with UOS account, ask your friend to link accounts via \'/link <UOS account name>\' command')
           }
         } else if (name.length === 12) {
-          const uosAccount = await this.api.getUosAccountScore(name)
+          const uosAccount = await that.api.getUosAccountScore(name)
 
           if (uosAccount && Object.entries(uosAccount).length !== 0) {
-            await ctx.replyWithMarkdown(this.manager.uosAccountToMarkdown(uosAccount))
+            await ctx.replyWithMarkdown(that.manager.uosAccountToMarkdown(uosAccount))
           } else {
             await ctx.replyWithMarkdown(`UOS account name *'${name}'* not found.`)
           }
@@ -145,10 +145,10 @@ I can help you to know the score of UOS Network accounts.
           await ctx.replyWithMarkdown('Account name must be exactly 12 chars length.')
         }
       } else if (myAccount) {
-        const uosAccount = await this.api.getUosAccountScore(myAccount.uos_name)
+        const uosAccount = await that.api.getUosAccountScore(myAccount.uos_name)
 
         if (uosAccount && Object.entries(uosAccount).length !== 0) {
-          await ctx.replyWithMarkdown(this.manager.uosLinkedAccountToMarkdown(uosAccount, myAccount.tg_name))
+          await ctx.replyWithMarkdown(that.manager.uosLinkedAccountToMarkdown(uosAccount, myAccount.tg_name))
         } else {
           await ctx.replyWithMarkdown(`UOS account name *'${name}'* not found.`)
         }
@@ -161,10 +161,10 @@ I can help you to know the score of UOS Network accounts.
     }
   }
 
-  async checkCommand (ctx) {
+  async checkCommand (that, ctx) {
     try {
       const name = ctx.state.command.args
-      await this.checkUser(ctx, name)
+      await that.checkUser(that, ctx, name)
     } catch (e) {
       console.error(e)
       await ctx.replyWithMarkdown(`ERROR: ${e.message}`)
@@ -181,11 +181,17 @@ I can help you to know the score of UOS Network accounts.
 
       this.api = api
 
-      this.telegraf.command('/link', this.linkCommand)
+      this.telegraf.command('/link', async (ctx) => {
+        this.linkCommand(this, ctx)
+      })
 
-      this.telegraf.command('/unlink', this.unlinkCommand)
+      this.telegraf.command('/unlink',  async (ctx) => {
+        this.unlinkCommand(this, ctx)
+      })
 
-      this.telegraf.command('/check', this.checkCommand)
+      this.telegraf.command('/check', async (ctx) => {
+        this.checkCommand(this, ctx)
+      })
 
     } else {
       console.debug('Bot initialized without link and check commands')
