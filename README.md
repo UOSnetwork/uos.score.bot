@@ -1,6 +1,6 @@
 # UOS Score Bot for Telegram
 
-![Travis (.org)](https://img.shields.io/travis/UOSnetwork/uos-score-bot)
+[![Build Status](https://travis-ci.org/UOSnetwork/uos.score.bot.svg?branch=master)](https://travis-ci.org/UOSnetwork/uos.score.bot)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/UOSnetwork/uos.score.bot)
 ![GitHub](https://img.shields.io/github/license/UOSnetwork/uos.score.bot)
 
