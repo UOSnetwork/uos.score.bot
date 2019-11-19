@@ -1,7 +1,7 @@
 {
   "name": "uos-score-bot",
   "description": "Telegram bot to query UOS Network Social and Importance° rates",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "main": "index.js",
   "scripts": {
     "test": "mocha --exit",
