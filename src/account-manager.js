@@ -22,7 +22,7 @@ module.exports = class AccountManager {
 
   uosLinkedAccountToMarkdown (account, name) {
     const format = new Intl.NumberFormat()
-    return `UOS score for @${name} linked with ${this.uosAccountMarkdownLink(account.account_name)} 
+    return `UOS score for *@${name}* linked with ${this.uosAccountMarkdownLink(account.account_name)} 
       \`Importance: ${format.format(account.importance_rate)}°\`
       \`Social: ${format.format(account.social_rate)}°\``
   }
