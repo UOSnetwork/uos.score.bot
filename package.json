@@ -32,7 +32,7 @@
     "knex": "^0.19.3",
     "node-fetch": "^2.6.0",
     "pg": "^7.14.0",
-    "telegraf": "^3.32.0",
+    "telegraf": "^3.34.1",
     "telegraf-command-parts": "^1.0.3"
   },
   "devDependencies": {
