@@ -63,9 +63,16 @@ module.exports = class UosApi {
     if (account && Object.entries(account).length !== 0) {
       accountB = {
         name: account.account_name,
-        liquid: account.core_liquid_balance,
-        stake_net: account.self_delegated_bandwidth.net_weight,
-        stake_cpu: account.self_delegated_bandwidth.cpu_weight
+        liquid: 0,
+        stake_net: 0,
+        stake_cpu: 0
+      }
+      if(account.core_liquid_balance) {
+        accountB.liquid = account.core_liquid_balance
+      }
+      if (account.self_delegated_bandwidth) {
+        accountB.stake_net = account.self_delegated_bandwidth.net_weight
+        accountB.stake_cpu = account.self_delegated_bandwidth.cpu_weight
       }
     }
 

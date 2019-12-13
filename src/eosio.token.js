@@ -7,7 +7,7 @@ module.exports = class EosioToken {
 
     assert.ok(!Number.isNaN(num), "Unexpected value")
 
-    if (Number.isSafeInteger(num)) {
+    if (Number.isSafeInteger(num) && String(value).indexOf('.') === -1) {
       this.value = Number(num / Math.pow(10, decimal) ).toFixed(decimal)
     } else {
       this.value = num
