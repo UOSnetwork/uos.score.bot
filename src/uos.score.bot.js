@@ -4,6 +4,11 @@ const Telegraf = require('telegraf')
 const Extra = require('telegraf/extra')
 const commandParts = require('telegraf-command-parts')
 
+const assert = require('assert')
+const AssertionError = require('assert').AssertionError
+
+const EosioToken = require('./eosio.token')
+
 module.exports = class UosScoreBot {
   constructor (token, params) {
     this.token = token
@@ -36,6 +41,8 @@ I can help you to know the score of UOS Network accounts.
 /check <Telegram/UOS account name> - Check the score of any telegram account (starting with @) or UOS account, sending this command without arguments shows your own score
 
 !score <Telegram/UOS account name> - Same as above, doesn't work without argument
+
+/balance - Check the balance of your telegram account (accounts should be linked using /link command)
 
 [❤❤❤ Join bot community! ❤❤❤](https://u.community/communities/245)`, Extra.webPreview(false))
   }
@@ -171,6 +178,34 @@ I can help you to know the score of UOS Network accounts.
     }
   }
 
+  async balanceCommand (that, ctx) {
+    try {
+      const linkedAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
+
+      assert.ok(linkedAccount, `Your telegram account @${linkedAccount.tg_name} must be linked to UOS account using /link command.`)
+
+      const uosName = linkedAccount.uos_name
+
+      assert.ok(uosName && uosName.length === 12, `UOS account name invalid (must be exactly 12 chars length), fix it using /unlink & /link commands.`)
+
+      const accountBalance = await that._getBalances(that, uosName)
+
+      assert.ok(accountBalance, `Failed to load account balances, please contact developers.`)
+
+      await ctx.replyWithMarkdown(that.manager.uosAccountBalanceToMarkdown(accountBalance), Extra.webPreview(false))
+
+    } catch (e) {
+      if (e instanceof AssertionError) {
+        console.error(e)
+        await ctx.replyWithMarkdown(`Error: ${e.message}`)
+      } else {
+        console.error(e)
+        await ctx.replyWithMarkdown(`GeneralError: ${e.message}`)
+      }
+    }
+  }
+
+
   init (manager, api) {
     this.telegraf.start(this.introMessage)
 
@@ -191,6 +226,10 @@ I can help you to know the score of UOS Network accounts.
 
       this.telegraf.command('/check', async (ctx) => {
         this.checkCommand(this, ctx)
+      })
+
+      this.telegraf.command('/balance', async (ctx) => {
+        this.balanceCommand(this, ctx)
       })
 
     } else {
@@ -225,5 +264,39 @@ I can help you to know the score of UOS Network accounts.
 
   stop () {
     this.telegraf.stop()
+  }
+
+  async _getBalances(that, accountName) {
+    let accountB = {name: accountName, token_balance: {}}
+
+    let token_balance = await that.api.getUosAccountBalance(accountName)
+
+    if (token_balance && Object.entries(token_balance).length !== 0) {
+      accountB.token_balance.liquid = new EosioToken(token_balance.liquid).toString()
+      accountB.token_balance.stake_net = new EosioToken(token_balance.stake_net).toString()
+      accountB.token_balance.stake_cpu = new EosioToken(token_balance.stake_cpu).toString()
+    }
+
+    let time_balance = await that.api.getUosAccountTimeLockedBalance(accountName)
+
+    if (time_balance && Object.entries(time_balance).length !== 0) {
+      accountB.token_balance.time_locked = new EosioToken(time_balance.total).toString()
+      accountB.token_balance.time_locked_w = new EosioToken(time_balance.withdrawal).toString()
+    } else {
+      accountB.token_balance.time_locked = new EosioToken(0).toString()
+      accountB.token_balance.time_locked_w = new EosioToken(0).toString()
+    }
+
+    let actv_balance = await that.api.getUosAccountActiveLockedBalance(accountName)
+
+    if (actv_balance && Object.entries(actv_balance).length !== 0) {
+      accountB.token_balance.actv_locked = new EosioToken(actv_balance.total).toString()
+      accountB.token_balance.actv_locked_w = new EosioToken(actv_balance.withdrawal).toString()
+    } else {
+      accountB.token_balance.actv_locked = new EosioToken(0).toString()
+      accountB.token_balance.actv_locked_w = new EosioToken(0).toString()
+    }
+
+    return accountB
   }
 }
