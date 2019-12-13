@@ -54,4 +54,52 @@ module.exports = class UosApi {
 
     return accountD
   }
+
+  async getUosAccountBalance (accountName) {
+    const account = await this.rpc.get_account(accountName)
+
+    let accountB = {}
+
+    if (account && Object.entries(account).length !== 0) {
+      accountB = {
+        name: account.account_name,
+        liquid: account.core_liquid_balance,
+        stake_net: account.self_delegated_bandwidth.net_weight,
+        stake_cpu: account.self_delegated_bandwidth.cpu_weight
+      }
+    }
+
+    return accountB
+  }
+
+  async getUosAccountVestedBalance (accountName, table) {
+    const response = await this.rpc.get_table_rows({
+      json: true,
+      code: table,
+      scope: table,
+      table: 'balance',
+      lower_bound: accountName,
+      limit: 1
+    })
+
+    const data = await response.rows
+
+    let accountB = {}
+
+    if (data && data.length > 0) {
+        accountB = {
+          total: data[0].deposit,
+          withdrawal: data[0].withdrawal
+        }
+    }
+
+    return accountB
+  }
+
+  async getUosAccountTimeLockedBalance (accountName) {
+    return this.getUosAccountVestedBalance(accountName, process.env.UOS_TIMELOCK_CONTRACT_NAME)
+  }
+  async getUosAccountActiveLockedBalance (accountName) {
+    return this.getUosAccountVestedBalance(accountName, process.env.UOS_ACTLOCK_CONTRACT_NAME)
+  }
 }

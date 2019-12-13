@@ -1,4 +1,4 @@
-const UosScoreBot = require('../src/uos-score-bot')
+const UosScoreBot = require('../src/uos.score.bot')
 
 const { assert } = require('chai')
 

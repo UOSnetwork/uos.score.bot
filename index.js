@@ -1,8 +1,8 @@
 require('dotenv').config()
 
-const AccountManager = require('./src/account-manager')
-const UosApi = require('./src/uos-api')
-const UosScoreBot = require('./src/uos-score-bot')
+const AccountManager = require('./src/account.manager')
+const UosApi = require('./src/uos.api')
+const UosScoreBot = require('./src/uos.score.bot')
 
 const conn = require('knex')({
   client: 'pg',

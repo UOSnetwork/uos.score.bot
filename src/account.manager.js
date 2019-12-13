@@ -3,6 +3,7 @@ require('dotenv').config()
 module.exports = class AccountManager {
   constructor (conn) {
     this.connnection = conn
+    this.format = new Intl.NumberFormat()
   }
 
   uosAccountMarkdownLink (name) {
@@ -14,17 +15,24 @@ module.exports = class AccountManager {
   }
 
   uosAccountToMarkdown (account) {
-    const format = new Intl.NumberFormat()
     return `UOS score for ${this.uosAccountMarkdownLink(account.account_name)}
-      \`Importance: ${format.format(account.importance_rate)}°\`
-      \`Social: ${format.format(account.social_rate)}°\``
+      \`Importance: ${this.format.format(account.importance_rate)}°\`
+      \`    Social: ${this.format.format(account.social_rate)}°\``
   }
 
   uosLinkedAccountToMarkdown (account, name) {
-    const format = new Intl.NumberFormat()
     return `UOS score for *@${name}* linked with ${this.uosAccountMarkdownLink(account.account_name)} 
-      \`Importance: ${format.format(account.importance_rate)}°\`
-      \`Social: ${format.format(account.social_rate)}°\``
+      \`Importance: ${this.format.format(account.importance_rate)}°\`
+      \`    Social: ${this.format.format(account.social_rate)}°\``
+  }
+
+  uosAccountBalanceToMarkdown (accountB) {
+    return `UOS account ${this.uosAccountMarkdownLink(accountB.name)} balances:
+      \`     Liquid: ${accountB.token_balance.liquid}\`
+      \`  Stake NET: ${accountB.token_balance.stake_net}\`
+      \`  Stake CPU: ${accountB.token_balance.stake_cpu}\`
+      \`Time Locked: ${accountB.token_balance.time_locked}, can withdraw: ${accountB.token_balance.time_locked_w}\`
+      \`Actv Locked: ${accountB.token_balance.actv_locked}, can withdraw: ${accountB.token_balance.actv_locked_w}\``
   }
 
   async _list () {
