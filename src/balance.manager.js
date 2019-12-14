@@ -113,6 +113,8 @@ module.exports = class BalanceManager {
 
     if (w_activity < w_avail) w_avail = w_activity
 
+    w_avail = w_avail - balance.withdrawal.value
+
     if (w_avail > 0) {
       return new EosioToken(w_avail.toFixed(balance.withdrawal.decimal))
     } else {
