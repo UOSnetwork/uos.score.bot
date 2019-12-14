@@ -280,8 +280,12 @@ I can help you to know the score of UOS Network accounts.
     let time_balance = await that.api.getUosAccountTimeLockedBalance(accountName)
 
     if (time_balance && Object.entries(time_balance).length !== 0) {
-      accountB.token_balance.time_locked = new EosioToken(time_balance.total).toString()
-      accountB.token_balance.time_locked_w = new EosioToken(time_balance.withdrawal).toString()
+      let bal = {
+        total: new EosioToken(time_balance.total),
+        withdrawal: new EosioToken(time_balance.withdrawal)
+      }
+      accountB.token_balance.time_locked = bal.total.toString()
+      accountB.token_balance.time_locked_w = that._getAvailTimeLockedWithdrawal(bal)
     } else {
       accountB.token_balance.time_locked = new EosioToken(0).toString()
       accountB.token_balance.time_locked_w = new EosioToken(0).toString()
@@ -290,13 +294,37 @@ I can help you to know the score of UOS Network accounts.
     let actv_balance = await that.api.getUosAccountActiveLockedBalance(accountName)
 
     if (actv_balance && Object.entries(actv_balance).length !== 0) {
-      accountB.token_balance.actv_locked = new EosioToken(actv_balance.total).toString()
-      accountB.token_balance.actv_locked_w = new EosioToken(actv_balance.withdrawal).toString()
+      let bal = {
+        total: new EosioToken(actv_balance.total),
+        withdrawal: new EosioToken(actv_balance.withdrawal)
+      }
+      accountB.token_balance.actv_locked = bal.total.toString()
+      accountB.token_balance.actv_locked_w = that._getAvailTimeLockedWithdrawal(bal)
     } else {
       accountB.token_balance.actv_locked = new EosioToken(0).toString()
       accountB.token_balance.actv_locked_w = new EosioToken(0).toString()
     }
 
     return accountB
+  }
+
+  _getAvailTimeLockedWithdrawal(balance) {
+
+    let start = new Date(process.env.UOS_TIMELOCK_START).getTime()
+    let end = new Date(process.env.UOS_TIMELOCK_END).getTime()
+    let now = new Date().getTime()
+
+    /*
+    withdraw_limit = (uint64_t)((float)itr->deposit
+                                          * (float)(current_time - lim_begin)
+                                          / (float)(lim_end - lim_begin));
+     */
+    let w_avail = balance.total.value * (now - start) / (end - start) - balance.withdrawal.value
+
+    if (w_avail > 0) {
+      return new EosioToken(w_avail.toFixed(balance.withdrawal.decimal))
+    } else {
+      return new EosioToken(0)
+    }
   }
 }
