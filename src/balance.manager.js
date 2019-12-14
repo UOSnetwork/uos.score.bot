@@ -53,10 +53,18 @@ module.exports = class BalanceManager {
     if (actv_balance && Object.entries(actv_balance).length !== 0) {
       let bal = {
         total: new EosioToken(actv_balance.total),
-        withdrawal: new EosioToken(actv_balance.withdrawal)
+        withdrawal: new EosioToken(actv_balance.withdrawal),
+        total_emission: zero
       }
+
+      let emission = await this.api.getUosAccountEmissionBalance(accountName)
+
+      if (emission && Object.entries(emission).length !== 0) {
+        bal.emission = new EosioToken(emission.total)
+      }
+
       accountB.actv_locked = bal.total.toString()
-      accountB.actv_unlocked = this.getAvailTimeLockedWithdrawal(bal).toString()
+      accountB.actv_unlocked = this.getAvailActivityLockedWithdrawal(bal).toString()
     }
 
     return accountB
@@ -74,6 +82,36 @@ module.exports = class BalanceManager {
                                           / (float)(lim_end - lim_begin));
      */
     let w_avail = balance.total.value * (now - start) / (end - start) - balance.withdrawal.value
+
+    if (w_avail > 0) {
+      return new EosioToken(w_avail.toFixed(balance.withdrawal.decimal))
+    } else {
+      return new EosioToken(0)
+    }
+  }
+
+  getAvailActivityLockedWithdrawal(balance) {
+
+    let start = new Date(process.env.UOS_TIMELOCK_START).getTime()
+    let end = new Date(process.env.UOS_TIMELOCK_END).getTime()
+    let now = new Date().getTime()
+
+    /*
+    limit_by_time = (uint64_t)((float)itr->deposit
+                                      * (float)(current_time - time_begin)
+                                      / (float)(time_end - time_begin));
+     */
+    let w_time = balance.total.value * (now - start) / (end - start)
+
+    /*
+    uint64_t limit_by_emission = (uint64_t)((float)emission.amount * mult);
+     */
+
+    let w_activity = balance.total_emission.value * process.env.UOS_ACTLOCK_MULTIPLIER
+
+    let w_avail = w_time
+
+    if (w_activity < w_avail) w_avail = w_activity
 
     if (w_avail > 0) {
       return new EosioToken(w_avail.toFixed(balance.withdrawal.decimal))
