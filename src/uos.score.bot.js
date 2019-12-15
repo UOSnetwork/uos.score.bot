@@ -49,60 +49,52 @@ I can help you to know the score of UOS Network accounts.
 
   async linkCommand (that, ctx) {
     try {
-      const uosName = ctx.state.command.args
-      const tgName = ctx.message.from.username
+      const name = ctx.state.command.args
+      const telegramName = ctx.message.from.username
+      const linkedAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
 
-      if (uosName && uosName.length === 12) {
-        const uosAccount = await that.api.getUosAccountScore(uosName)
+      assert.ok(telegramName, 'Please set your Telegram username to use this service.')
+      assert.ok(!linkedAccount, `Your telegram account @${linkedAccount.tg_name} is already linked to UOS account ${that.manager.uosAccountMarkdownName(linkedAccount.uos_name)}.`)
+      assert.ok(name, 'Provide valid UOS account name to link your telegram account with.')
+      assert.ok(name.length === 12, 'Account name must be exactly 12 chars length.')
 
-        if (uosAccount && Object.entries(uosAccount).length !== 0) {
-          const linkedAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
+      const accountScore = await that.api.getUosAccountScore(name)
+      assert.ok(accountScore && Object.entries(accountScore).length !== 0, `UOS account name '${name}' not found.`)
 
-          if (!linkedAccount) {
-            try {
-              const uosAccountDetails = JSON.parse(await that.api.getUosAccountDetails(uosName))
-
-              if (uosAccountDetails && Object.entries(uosAccountDetails).length !== 0) {
-                let found = false
-
-                const pattern = new RegExp(/^https:\/\/t.me\/(\w+)$/g)
-
-                for (const source of uosAccountDetails.usersSources) {
-                  const test = pattern.exec(source.sourceUrl)
-                  if (test && test.length > 0 && test[1] === tgName) {
-                    found = true
-                  }
-                }
-
-                if (found) {
-                  const result = await that.manager.addAccount({
-                    tg_uid: ctx.message.from.id,
-                    tg_name: tgName,
-                    uos_name: uosName
-                  })
-                  await ctx.replyWithMarkdown(`Your telegram account @${result.tg_name} linked to UOS account ${that.manager.uosAccountMarkdownName(result.uos_name)}.`)
-                } else {
-                  await ctx.replyWithMarkdown(`${process.env.ACCOUNT_HELP_LINK}`)
-                }
-              } else {
-                await ctx.replyWithMarkdown(`UOS account details for ${that.manager.uosAccountMarkdownLink(uosName)} not found, please register on U°Community platform to use this service.`)
-              }
-            } catch (e) {
-              console.error(e)
-              await ctx.replyWithMarkdown(`ERROR parsing your UOS account data. ${process.env.ACCOUNT_HELP_LINK}`)
-            }
-          } else {
-            await ctx.replyWithMarkdown(`Your telegram account @${linkedAccount.tg_name} is already linked to UOS account ${that.manager.uosAccountMarkdownName(linkedAccount.uos_name)}.`)
-          }
-        } else {
-          await ctx.replyWithMarkdown(`UOS account name ${that.manager.uosAccountMarkdownLink(uosName)} not found.`)
-        }
-      } else {
-        await ctx.replyWithMarkdown('Provide valid UOS account name (must be exactly 12 chars length) to link your telegram account with.')
+      let uosAccountDetails
+      try {
+        uosAccountDetails = JSON.parse(await that.api.getUosAccountDetails(name))
+      } catch (e) {
+        assert.fail(`Unable to parse your UOS account data. ${process.env.ACCOUNT_HELP_LINK}`)
       }
+      assert.ok(uosAccountDetails && Object.entries(uosAccountDetails).length !== 0, `UOS account details for '${name}' not found, please register on U°Community platform to use this service.`)
+
+      let found = false
+      const pattern = new RegExp(/^https:\/\/t.me\/(\w+)$/g)
+
+      for (const source of uosAccountDetails.usersSources) {
+        const test = pattern.exec(source.sourceUrl)
+        if (test && test.length > 0 && test[1] === telegramName) {
+          found = true
+        }
+      }
+      assert.ok(found, `Please edit your U°Community profile to link accounts. ${process.env.ACCOUNT_HELP_LINK}`)
+
+      const result = await that.manager.addAccount({
+        tg_uid: ctx.message.from.id,
+        tg_name: telegramName,
+        uos_name: name
+      })
+      await ctx.replyWithMarkdown(`Your telegram account @${result.tg_name} linked to UOS account ${result.uos_name}.`)
+
     } catch (e) {
-      console.error(e)
-      await ctx.replyWithMarkdown(`ERROR: ${e.message}`)
+      if (e instanceof AssertionError) {
+        console.error(e)
+        await ctx.replyWithMarkdown(`Error: ${e.message}`)
+      } else {
+        console.error(e)
+        await ctx.replyWithMarkdown(`GeneralError: ${e.message}`)
+      }
     }
   }
 
@@ -192,7 +184,6 @@ I can help you to know the score of UOS Network accounts.
       }
     }
   }
-
 
   init (manager, api) {
     this.telegraf.start(this.introMessage)
