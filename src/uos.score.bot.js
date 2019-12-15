@@ -108,16 +108,20 @@ I can help you to know the score of UOS Network accounts.
 
   async unlinkCommand (that, ctx) {
     try {
-      const account = await that.manager.getAccountByTelegramId(ctx.message.from.id)
-      if (account) {
-        await that.manager.removeAccount(account.tg_uid)
-        await ctx.replyWithMarkdown(`Your telegram account @${account.tg_name} unlinked from UOS account ${that.manager.uosAccountMarkdownName(account.uos_name)}.`)
-      } else {
-        await ctx.replyWithMarkdown('Your telegram account is not linked with any UOS account.')
-      }
+      const userAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
+      assert.ok(userAccount,'Your telegram account is not linked with any UOS account.')
+
+      await that.manager.removeAccount(userAccount.tg_uid)
+      await ctx.replyWithMarkdown(`Your telegram account @${userAccount.tg_name} unlinked from UOS account ${that.manager.uosAccountMarkdownName(userAccount.uos_name)}.`)
+
     } catch (e) {
-      console.error(e)
-      await ctx.replyWithMarkdown(`ERROR: ${e.message}`)
+      if (e instanceof AssertionError) {
+        console.error(e)
+        await ctx.replyWithMarkdown(`Error: ${e.message}`)
+      } else {
+        console.error(e)
+        await ctx.replyWithMarkdown(`GeneralError: ${e.message}`)
+      }
     }
   }
 
