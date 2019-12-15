@@ -122,50 +122,29 @@ I can help you to know the score of UOS Network accounts.
   }
 
   async checkUser (that, ctx, name) {
-    try {
-      const myAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
+    let accountScore
+    let telegramName
 
-      if (name) {
-        if (name.startsWith('@')) {
-          const linkedAccount = await that.manager.getAccountByTelegramName(name.replace('@', ''))
-
-          if (linkedAccount) {
-            const uosAccount = await that.api.getUosAccountScore(linkedAccount.uos_name)
-
-            if (uosAccount && Object.entries(uosAccount).length !== 0) {
-              await ctx.replyWithMarkdown(that.manager.uosLinkedAccountToMarkdown(uosAccount, linkedAccount.tg_name))
-            } else {
-              await ctx.replyWithMarkdown(`UOS account name *'${name}'* not found.`)
-            }
-          } else {
-            await ctx.replyWithMarkdown('This telegram account is not linked with UOS account, ask your friend to link accounts via \'/link <UOS account name>\' command')
-          }
-        } else if (name.length === 12) {
-          const uosAccount = await that.api.getUosAccountScore(name)
-
-          if (uosAccount && Object.entries(uosAccount).length !== 0) {
-            await ctx.replyWithMarkdown(that.manager.uosAccountToMarkdown(uosAccount))
-          } else {
-            await ctx.replyWithMarkdown(`UOS account name *'${name}'* not found.`)
-          }
-        } else {
-          await ctx.replyWithMarkdown('Account name must be exactly 12 chars length.')
-        }
-      } else if (myAccount) {
-        const uosAccount = await that.api.getUosAccountScore(myAccount.uos_name)
-
-        if (uosAccount && Object.entries(uosAccount).length !== 0) {
-          await ctx.replyWithMarkdown(that.manager.uosLinkedAccountToMarkdown(uosAccount, myAccount.tg_name))
-        } else {
-          await ctx.replyWithMarkdown(`UOS account name *'${name}'* not found.`)
-        }
-      } else {
-        await ctx.replyWithMarkdown('Please link your telegram account to UOS account via \'/link <UOS account name>\' command')
+    if (name && name.startsWith('@')) {
+      const linkedAccount = await that.manager.getAccountByTelegramName(name.replace('@', ''))
+      assert.ok(linkedAccount, 'This telegram account is not linked with UOS account, ask your friend to link accounts via \'/link <UOS account name>\' command.')
+      name = linkedAccount.uos_name
+      telegramName = linkedAccount.tg_name
+    } else if (!name) {
+      const userAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
+      if (userAccount) {
+        name = userAccount.uos_name
       }
-    } catch (e) {
-      console.error(e)
-      await ctx.replyWithMarkdown(`ERROR: ${e.message}`)
     }
+
+    assert.ok(name, 'Please use proper command format or link your telegram account to UOS account via \'/link <UOS account name>\' command.')
+    assert.ok(name.length === 12, 'Account name must be exactly 12 chars length.')
+
+    accountScore = await that.api.getUosAccountScore(name)
+    assert.ok(accountScore && Object.entries(accountScore).length !== 0, `UOS account name '${name}' not found.`)
+
+    await ctx.replyWithMarkdown(that.manager.uosAccountToMarkdown(accountScore, telegramName))
+
   }
 
   async checkCommand (that, ctx) {
@@ -173,8 +152,13 @@ I can help you to know the score of UOS Network accounts.
       const name = ctx.state.command.args
       await that.checkUser(that, ctx, name)
     } catch (e) {
-      console.error(e)
-      await ctx.replyWithMarkdown(`ERROR: ${e.message}`)
+      if (e instanceof AssertionError) {
+        console.error(e)
+        await ctx.replyWithMarkdown(`Error: ${e.message}`)
+      } else {
+        console.error(e)
+        await ctx.replyWithMarkdown(`GeneralError: ${e.message}`)
+      }
     }
   }
 
