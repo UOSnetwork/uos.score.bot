@@ -20,21 +20,21 @@ module.exports = class BalanceManager {
     let zero = new EosioToken(0)
     let accountB = {
       name: accountName,
-      liquid: zero.toString(),
-      stake_net: zero.toString(),
-      stake_cpu: zero.toString(),
-      time_locked: zero.toString(),
-      time_unlocked: zero.toString(),
-      actv_locked: zero.toString(),
-      actv_unlocked: zero.toString()
+      liquid: zero,
+      stake_net: zero,
+      stake_cpu: zero,
+      time_locked: zero,
+      time_unlocked: zero,
+      actv_locked: zero,
+      actv_unlocked: zero
     }
 
     let token_balance = await this.api.getUosAccountBalance(accountName)
 
     if (token_balance && Object.entries(token_balance).length !== 0) {
-      accountB.liquid = new EosioToken(token_balance.liquid).toString()
-      accountB.stake_net = new EosioToken(token_balance.stake_net).toString()
-      accountB.stake_cpu = new EosioToken(token_balance.stake_cpu).toString()
+      accountB.liquid = new EosioToken(token_balance.liquid)
+      accountB.stake_net = new EosioToken(token_balance.stake_net)
+      accountB.stake_cpu = new EosioToken(token_balance.stake_cpu)
     }
 
     let time_balance = await this.api.getUosAccountTimeLockedBalance(accountName)
@@ -44,8 +44,8 @@ module.exports = class BalanceManager {
         total: new EosioToken(time_balance.total),
         withdrawal: new EosioToken(time_balance.withdrawal)
       }
-      accountB.time_locked = bal.total.toString()
-      accountB.time_unlocked = this.getAvailTimeLockedWithdrawal(bal).toString()
+      accountB.time_locked = bal.total
+      accountB.time_unlocked = this.getAvailTimeLockedWithdrawal(bal)
     }
 
     let actv_balance = await this.api.getUosAccountActiveLockedBalance(accountName)
@@ -63,8 +63,8 @@ module.exports = class BalanceManager {
         bal.emission = new EosioToken(emission.total)
       }
 
-      accountB.actv_locked = bal.total.toString()
-      accountB.actv_unlocked = this.getAvailActivityLockedWithdrawal(bal).toString()
+      accountB.actv_locked = bal.total
+      accountB.actv_unlocked = this.getAvailActivityLockedWithdrawal(bal)
     }
 
     return accountB
