@@ -86,12 +86,16 @@ module.exports = class UosApi {
       scope: table,
       table: 'balance',
       lower_bound: accountName,
+      upper_bound: accountName,
       limit: 1
     })
 
     const data = await response.rows
 
-    let accountB = {}
+    let accountB = {
+      total: 0,
+      withdrawal: 0
+    }
 
     if (data && data.length > 0) {
         accountB = {
