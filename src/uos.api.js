@@ -109,4 +109,29 @@ module.exports = class UosApi {
   async getUosAccountActiveLockedBalance (accountName) {
     return this.getUosAccountVestedBalance(accountName, process.env.UOS_ACTLOCK_CONTRACT_NAME)
   }
+
+  async getUosAccountEmissionBalance (accountName) {
+    const response = await this.rpc.get_table_rows({
+      json: true,
+      code: process.env.UOS_EMISSION_CONTRACT_NAME,
+      scope: process.env.UOS_EMISSION_CONTRACT_NAME,
+      table: 'totals',
+      lower_bound: accountName,
+      limit: 1
+    })
+
+    const data = await response.rows
+
+    let accountE = {}
+
+    if (data && data.length > 0) {
+      accountE = {
+        name: data[0].owner,
+        total: data[0].total_emission,
+        withdrawal: data[0].total_withdrawal
+      }
+    }
+
+    return accountE
+  }
 }
