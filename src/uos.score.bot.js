@@ -54,7 +54,7 @@ I can help you to know the score of UOS Network accounts.
       const linkedAccount = await that.manager.getAccountByTelegramId(ctx.message.from.id)
 
       assert.ok(telegramName, 'Please set your Telegram username to use this service.')
-      assert.ok(!linkedAccount, `Your telegram account @${linkedAccount.tg_name} is already linked to UOS account ${that.manager.uosAccountMarkdownName(linkedAccount.uos_name)}.`)
+      assert.ok(!linkedAccount, `Your telegram account @${telegramName} is already linked with UOS account.`)
       assert.ok(name, 'Provide valid UOS account name to link your telegram account with.')
       assert.ok(name.length === 12, 'Account name must be exactly 12 chars length.')
 
