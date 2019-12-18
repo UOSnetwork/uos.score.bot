@@ -14,16 +14,20 @@ module.exports = class AccountManager {
     return `${name}°`
   }
 
-  uosAccountToMarkdown (account) {
-    return `UOS score for ${this.uosAccountMarkdownLink(account.account_name)}
-      \`Importance: ${this.format.format(account.importance_rate)}°\`
-      \`    Social: ${this.format.format(account.social_rate)}°\``
+  uosAccountToMarkdown (score, telegram_name) {
+    if (telegram_name) {
+      return this.uosLinkedAccountToMarkdown(score, telegram_name)
+    } else {
+      return `UOS score for ${this.uosAccountMarkdownLink(score.account_name)}
+      \`Importance: ${this.format.format(score.importance_rate)}°\`
+      \`    Social: ${this.format.format(score.social_rate)}°\``
+    }
   }
 
-  uosLinkedAccountToMarkdown (account, name) {
-    return `UOS score for *@${name}* linked with ${this.uosAccountMarkdownLink(account.account_name)} 
-      \`Importance: ${this.format.format(account.importance_rate)}°\`
-      \`    Social: ${this.format.format(account.social_rate)}°\``
+  uosLinkedAccountToMarkdown (score, telegram_name) {
+    return `UOS score for *@${telegram_name}* linked with ${this.uosAccountMarkdownLink(score.account_name)} 
+      \`Importance: ${this.format.format(score.importance_rate)}°\`
+      \`    Social: ${this.format.format(score.social_rate)}°\``
   }
 
   async _list () {
