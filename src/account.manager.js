@@ -30,15 +30,6 @@ module.exports = class AccountManager {
       \`    Social: ${this.format.format(score.social_rate)}°\``
   }
 
-  uosAccountBalanceToMarkdown (accountB) {
-    return `UOS account ${this.uosAccountMarkdownLink(accountB.name)} balances:
-      \`     Liquid: ${accountB.token_balance.liquid}\`
-      \`  Stake NET: ${accountB.token_balance.stake_net}\`
-      \`  Stake CPU: ${accountB.token_balance.stake_cpu}\`
-      \`Time Locked: ${accountB.token_balance.time_locked}, can withdraw: ${accountB.token_balance.time_locked_w}\`
-      \`Actv Locked: ${accountB.token_balance.actv_locked}, can withdraw: ${accountB.token_balance.actv_locked_w}\``
-  }
-
   async _list () {
     const result = (await this.connnection.from('tbl_accounts').select('*')).map(function (row) {
       return {
