@@ -31,7 +31,7 @@
     "eosjs": "^20.0.0",
     "knex": "^0.20.7",
     "node-fetch": "^2.6.0",
-    "pg": "^7.17.0",
+    "pg": "^7.17.1",
     "telegraf": "^3.35.0",
     "telegraf-command-parts": "^1.0.3"
   },
