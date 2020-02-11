@@ -29,7 +29,7 @@
   "dependencies": {
     "dotenv": "^8.1.0",
     "eosjs": "^20.0.3",
-    "knex": "^0.20.7",
+    "knex": "^0.20.9",
     "node-fetch": "^2.6.0",
     "pg": "^7.18.1",
     "telegraf": "^3.36.0",
