@@ -7,6 +7,8 @@ const commandParts = require('telegraf-command-parts')
 const assert = require('assert')
 const AssertionError = require('assert').AssertionError
 
+const express = require('express')
+
 module.exports = class UosScoreBot {
   constructor (token, params) {
     this.token = token
@@ -194,19 +196,19 @@ I can help you to know the score of UOS Network accounts.
       this.balanceManager = balanceManager
 
       this.telegraf.command('/link', async (ctx) => {
-        this.linkCommand(this, ctx)
+        await this.linkCommand(this, ctx)
       })
 
       this.telegraf.command('/unlink',  async (ctx) => {
-        this.unlinkCommand(this, ctx)
+        await this.unlinkCommand(this, ctx)
       })
 
       this.telegraf.command('/check', async (ctx) => {
-        this.checkCommand(this, ctx)
+        await this.checkCommand(this, ctx)
       })
 
       this.telegraf.command('/balance', async (ctx) => {
-        this.balanceCommand(this, ctx)
+        await this.balanceCommand(this, ctx)
       })
 
     } else {
@@ -216,23 +218,19 @@ I can help you to know the score of UOS Network accounts.
     this.initialized = true
   }
 
-  start () {
+  async start () {
     if (this.initialized) {
       if (process.env.NODE_ENV === 'production') {
-        /*
-              bot.launch({
-                webhook: {
-                domain: process.env.HEROKU_URL + bot.token,
-                port: process.env.PORT
-              }
-            })
-            webhook doesn't work for some reason, so we have to use default mode to start the bot
-            */
-        this.telegraf.launch()
+        const app = express()
+        const PORT = process.env.PORT || 3000
+        await this.telegraf.telegram.setWebhook(process.env.WEBHOOK_URL+'/bot'+process.env.TOKEN)
+        app.use(this.telegraf.webhookCallback(`/bot${process.env.TOKEN}`))
+        app.listen(PORT, () => {
+          console.log(`Express server is listening on ${PORT}`)
+        })
       } else {
-        this.telegraf.launch()
+        await this.telegraf.launch()
       }
-
       console.debug('Bot process started in the ' + process.env.NODE_ENV + ' mode')
     } else {
       console.error('Initialize bot before starting')
@@ -242,6 +240,4 @@ I can help you to know the score of UOS Network accounts.
   stop () {
     this.telegraf.stop()
   }
-
-
 }
