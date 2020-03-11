@@ -76,7 +76,7 @@ You can use the bot using the following commands:
 
 ## Deployment
 
-For production, you can deploy it on Heroku or any other similar service. There is [Procfile](Procfile) for the Heroku worker.
+For production, you can deploy it on Heroku or any other similar service.
 
 ## Built With
 
