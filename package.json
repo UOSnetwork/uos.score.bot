@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "dotenv": "^8.1.0",
-    "eosjs": "^20.0.3",
+    "eosjs": "^21.0.2",
     "express": "^4.17.1",
     "knex": "^0.20.11",
     "node-fetch": "^2.6.0",
